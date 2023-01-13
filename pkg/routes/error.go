@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	"github.com/mikestefanello/pagoda/pkg/context"
-	"github.com/mikestefanello/pagoda/pkg/controller"
+	"github.com/francoganga/finance/pkg/context"
+	"github.com/francoganga/finance/pkg/controller"
 
 	"github.com/labstack/echo/v4"
 )

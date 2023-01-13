@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/mikestefanello/pagoda/config"
-	"github.com/mikestefanello/pagoda/ent"
-	"github.com/mikestefanello/pagoda/ent/passwordtoken"
-	"github.com/mikestefanello/pagoda/ent/user"
-	"github.com/mikestefanello/pagoda/pkg/context"
+	"github.com/francoganga/finance/config"
+	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/ent/passwordtoken"
+	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/pkg/context"
 	"github.com/uptrace/bun"
 
 	"github.com/labstack/echo-contrib/session"

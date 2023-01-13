@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mikestefanello/pagoda/config"
+	"github.com/francoganga/finance/config"
 
 	"github.com/labstack/echo/v4"
 )

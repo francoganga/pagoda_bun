@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/mikestefanello/pagoda/ent/passwordtoken"
-	"github.com/mikestefanello/pagoda/ent/predicate"
+	"github.com/francoganga/finance/ent/passwordtoken"
+	"github.com/francoganga/finance/ent/predicate"
 )
 
 // PasswordTokenDelete is the builder for deleting a PasswordToken entity.

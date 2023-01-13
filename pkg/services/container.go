@@ -14,8 +14,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 
-	"github.com/mikestefanello/pagoda/config"
-	"github.com/mikestefanello/pagoda/ent"
+	"github.com/francoganga/finance/config"
+	"github.com/francoganga/finance/ent"
 
 	// Require by ent
 

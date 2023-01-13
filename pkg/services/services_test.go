@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mikestefanello/pagoda/config"
-	"github.com/mikestefanello/pagoda/ent"
-	"github.com/mikestefanello/pagoda/pkg/tests"
+	"github.com/francoganga/finance/config"
+	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/pkg/tests"
 
 	"github.com/labstack/echo/v4"
 )

@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mikestefanello/pagoda/ent/passwordtoken"
-	"github.com/mikestefanello/pagoda/ent/predicate"
-	"github.com/mikestefanello/pagoda/ent/user"
+	"github.com/francoganga/finance/ent/passwordtoken"
+	"github.com/francoganga/finance/ent/predicate"
+	"github.com/francoganga/finance/ent/user"
 
 	"entgo.io/ent"
 )

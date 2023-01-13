@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	"github.com/mikestefanello/pagoda/pkg/tests"
+	"github.com/francoganga/finance/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

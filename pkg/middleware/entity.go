@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mikestefanello/pagoda/ent"
-	"github.com/mikestefanello/pagoda/ent/user"
-	"github.com/mikestefanello/pagoda/pkg/context"
+	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/pkg/context"
 
 	"github.com/labstack/echo/v4"
 )

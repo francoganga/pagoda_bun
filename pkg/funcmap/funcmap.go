@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mikestefanello/pagoda/config"
+	"github.com/francoganga/finance/config"
 
 	"github.com/Masterminds/sprig"
 	"github.com/labstack/gommon/random"

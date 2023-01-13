@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mikestefanello/pagoda/ent/migrate"
+	"github.com/francoganga/finance/ent/migrate"
 
-	"github.com/mikestefanello/pagoda/ent/passwordtoken"
-	"github.com/mikestefanello/pagoda/ent/user"
+	"github.com/francoganga/finance/ent/passwordtoken"
+	"github.com/francoganga/finance/ent/user"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"

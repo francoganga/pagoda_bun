@@ -8,11 +8,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mikestefanello/pagoda/config"
-	"github.com/mikestefanello/pagoda/pkg/htmx"
-	"github.com/mikestefanello/pagoda/pkg/middleware"
-	"github.com/mikestefanello/pagoda/pkg/services"
-	"github.com/mikestefanello/pagoda/pkg/tests"
+	"github.com/francoganga/finance/config"
+	"github.com/francoganga/finance/pkg/htmx"
+	"github.com/francoganga/finance/pkg/middleware"
+	"github.com/francoganga/finance/pkg/services"
+	"github.com/francoganga/finance/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

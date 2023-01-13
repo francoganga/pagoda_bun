@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/hibiken/asynq"
-	"github.com/mikestefanello/pagoda/config"
-	"github.com/mikestefanello/pagoda/pkg/tasks"
+	"github.com/francoganga/finance/config"
+	"github.com/francoganga/finance/pkg/tasks"
 )
 
 func main() {

@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/mikestefanello/pagoda/ent"
-	"github.com/mikestefanello/pagoda/pkg/context"
-	"github.com/mikestefanello/pagoda/pkg/controller"
-	"github.com/mikestefanello/pagoda/pkg/msg"
+	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/pkg/context"
+	"github.com/francoganga/finance/pkg/controller"
+	"github.com/francoganga/finance/pkg/msg"
 
 	"github.com/labstack/echo/v4"
 )

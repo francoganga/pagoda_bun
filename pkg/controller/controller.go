@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mikestefanello/pagoda/pkg/context"
-	"github.com/mikestefanello/pagoda/pkg/htmx"
-	"github.com/mikestefanello/pagoda/pkg/middleware"
-	"github.com/mikestefanello/pagoda/pkg/services"
+	"github.com/francoganga/finance/pkg/context"
+	"github.com/francoganga/finance/pkg/htmx"
+	"github.com/francoganga/finance/pkg/middleware"
+	"github.com/francoganga/finance/pkg/services"
 
 	"github.com/labstack/echo/v4"
 )

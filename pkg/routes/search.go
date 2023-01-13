@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/mikestefanello/pagoda/pkg/controller"
+	"github.com/francoganga/finance/pkg/controller"
 
 	"github.com/labstack/echo/v4"
 )
