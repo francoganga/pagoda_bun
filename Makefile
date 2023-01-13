@@ -41,7 +41,7 @@ ent-new:
 .PHONY: up
 up:
 	$(DCO_BIN) up -d
-	sleep 3
+	sleep 1
 
 # Rebuild Docker containers to wipe all data
 .PHONY: reset

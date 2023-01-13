@@ -13,6 +13,7 @@ import (
 	"github.com/mikestefanello/pagoda/ent/passwordtoken"
 	"github.com/mikestefanello/pagoda/ent/user"
 	"github.com/mikestefanello/pagoda/pkg/context"
+	"github.com/uptrace/bun"
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -50,13 +51,15 @@ func (e InvalidPasswordTokenError) Error() string {
 type AuthClient struct {
 	config *config.Config
 	orm    *ent.Client
+	bun    *bun.DB
 }
 
 // NewAuthClient creates a new authentication client
-func NewAuthClient(cfg *config.Config, orm *ent.Client) *AuthClient {
+func NewAuthClient(cfg *config.Config, orm *ent.Client, bun *bun.DB) *AuthClient {
 	return &AuthClient{
 		config: cfg,
 		orm:    orm,
+		bun:    bun,
 	}
 }
 

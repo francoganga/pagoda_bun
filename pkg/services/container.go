@@ -18,7 +18,11 @@ import (
 	"github.com/mikestefanello/pagoda/ent"
 
 	// Require by ent
-	_ "github.com/mikestefanello/pagoda/ent/runtime"
+
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 // Container contains all services used by the application and provides an easy way to handle dependency
@@ -38,6 +42,9 @@ type Container struct {
 
 	// Database stores the connection to the database
 	Database *sql.DB
+
+	// Bun DB connection
+	Bun *bun.DB
 
 	// ORM stores a client to the ORM
 	ORM *ent.Client
@@ -146,6 +153,10 @@ func (c *Container) initDatabase() {
 		panic(fmt.Sprintf("failed to connect to database: %v", err))
 	}
 
+	c.Bun = bun.NewDB(c.Database, pgdialect.New())
+
+	c.Bun.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true), bundebug.FromEnv("BUNDEBUG")))
+
 	// Check if this is a test environment
 	if c.Config.App.Environment == config.EnvTest {
 		// Drop the test database, ignoring errors in case it doesn't yet exist
@@ -164,6 +175,8 @@ func (c *Container) initDatabase() {
 		if err != nil {
 			panic(fmt.Sprintf("failed to connect to database: %v", err))
 		}
+
+		c.Bun = bun.NewDB(c.Database, pgdialect.New())
 	}
 }
 
@@ -178,7 +191,7 @@ func (c *Container) initORM() {
 
 // initAuth initializes the authentication client
 func (c *Container) initAuth() {
-	c.Auth = NewAuthClient(c.Config, c.ORM)
+	c.Auth = NewAuthClient(c.Config, c.ORM, c.Bun)
 }
 
 // initTemplateRenderer initializes the template renderer
