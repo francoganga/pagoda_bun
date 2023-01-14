@@ -1,13 +1,11 @@
 package services
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/schema"
 
 	// Required by ent
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -184,9 +182,9 @@ func (c *Container) initDatabase() {
 func (c *Container) initORM() {
 	drv := entsql.OpenDB(dialect.Postgres, c.Database)
 	c.ORM = ent.NewClient(ent.Driver(drv))
-	if err := c.ORM.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {
-		panic(fmt.Sprintf("failed to create database schema: %v", err))
-	}
+	// if err := c.ORM.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {
+	// 	panic(fmt.Sprintf("failed to create database schema: %v", err))
+	// }
 }
 
 // initAuth initializes the authentication client

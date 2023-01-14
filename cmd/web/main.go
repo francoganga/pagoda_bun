@@ -142,7 +142,7 @@ var migrateCommand = &cli.Command{
 
 			},
 		},
-        {
+		{
 			Name:  "create_sql",
 			Usage: "create up and down SQL migrations",
 			Action: func(c *cli.Context) error {

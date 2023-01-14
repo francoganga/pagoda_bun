@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/htmx"
 	"github.com/francoganga/finance/pkg/msg"
@@ -70,7 +70,7 @@ type Page struct {
 	IsAuth bool
 
 	// AuthUser stores the authenticated user
-	AuthUser *ent.User
+	AuthUser *models.User
 
 	// StatusCode stores the HTTP status code that will be returned
 	StatusCode int
@@ -141,7 +141,7 @@ func NewPage(ctx echo.Context) Page {
 
 	if u := ctx.Get(context.AuthenticatedUserKey); u != nil {
 		p.IsAuth = true
-		p.AuthUser = u.(*ent.User)
+		p.AuthUser = u.(*models.User)
 	}
 
 	p.HTMX.Request = htmx.GetRequest(ctx)

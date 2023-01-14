@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/msg"
 	"github.com/francoganga/finance/pkg/services"
@@ -48,7 +49,7 @@ func LoadValidPasswordToken(authClient *services.AuthClient) echo.MiddlewareFunc
 			if c.Get(context.UserKey) == nil {
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}
-			usr := c.Get(context.UserKey).(*ent.User)
+			usr := c.Get(context.UserKey).(*models.User)
 
 			// Extract the token ID
 			tokenID, err := strconv.Atoi(c.Param("password_token"))

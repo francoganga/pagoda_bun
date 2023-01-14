@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/francoganga/finance/config"
 	"github.com/francoganga/finance/ent"
-	"github.com/francoganga/finance/ent/passwordtoken"
-	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
+	"github.com/golang-jwt/jwt"
 	"github.com/uptrace/bun"
 
 	"github.com/labstack/echo-contrib/session"
@@ -99,11 +98,25 @@ func (c *AuthClient) GetAuthenticatedUserID(ctx echo.Context) (int, error) {
 }
 
 // GetAuthenticatedUser returns the authenticated user if the user is logged in
-func (c *AuthClient) GetAuthenticatedUser(ctx echo.Context) (*ent.User, error) {
+// func (c *AuthClient) GetAuthenticatedUser(ctx echo.Context) (*ent.User, error) {
+// 	if userID, err := c.GetAuthenticatedUserID(ctx); err == nil {
+// 		return c.orm.User.Query().
+// 			Where(user.ID(userID)).
+// 			Only(ctx.Request().Context())
+// 	}
+//
+// 	return nil, NotAuthenticatedError{}
+// }
+
+func (c *AuthClient) GetAuthenticatedUser(ctx echo.Context) (*models.User, error) {
 	if userID, err := c.GetAuthenticatedUserID(ctx); err == nil {
-		return c.orm.User.Query().
-			Where(user.ID(userID)).
-			Only(ctx.Request().Context())
+		u := new(models.User)
+		c.bun.NewSelect().
+			Model(u).
+			Where("id = ?", userID).
+			Scan(ctx.Request().Context())
+
+		return u, nil
 	}
 
 	return nil, NotAuthenticatedError{}
@@ -127,7 +140,30 @@ func (c *AuthClient) CheckPassword(password, hash string) error {
 // For security purposes, the token itself is not stored in the database but rather
 // a hash of the token, exactly how passwords are handled. This method returns both
 // the generated token as well as the token entity which only contains the hash.
-func (c *AuthClient) GeneratePasswordResetToken(ctx echo.Context, userID int) (string, *ent.PasswordToken, error) {
+// func (c *AuthClient) GeneratePasswordResetToken(ctx echo.Context, userID int) (string, *ent.PasswordToken, error) {
+// 	// Generate the token, which is what will go in the URL, but not the database
+// 	token, err := c.RandomToken(c.config.App.PasswordToken.Length)
+// 	if err != nil {
+// 		return "", nil, err
+// 	}
+//
+// 	// Hash the token, which is what will be stored in the database
+// 	hash, err := c.HashPassword(token)
+// 	if err != nil {
+// 		return "", nil, err
+// 	}
+//
+// 	// Create and save the password reset token
+// 	pt, err := c.orm.PasswordToken.
+// 		Create().
+// 		SetHash(hash).
+// 		SetUserID(userID).
+// 		Save(ctx.Request().Context())
+//
+// 	return token, pt, err
+// }
+
+func (c *AuthClient) GeneratePasswordResetToken(ctx echo.Context, userID int) (string, *models.PasswordToken, error) {
 	// Generate the token, which is what will go in the URL, but not the database
 	token, err := c.RandomToken(c.config.App.PasswordToken.Length)
 	if err != nil {
@@ -141,29 +177,64 @@ func (c *AuthClient) GeneratePasswordResetToken(ctx echo.Context, userID int) (s
 	}
 
 	// Create and save the password reset token
-	pt, err := c.orm.PasswordToken.
-		Create().
-		SetHash(hash).
-		SetUserID(userID).
-		Save(ctx.Request().Context())
+
+	pt := &models.PasswordToken{
+		Hash:   hash,
+		UserID: userID,
+	}
+
+	c.bun.NewInsert().
+		Model(pt).
+		Exec(ctx.Request().Context())
 
 	return token, pt, err
+
 }
 
 // GetValidPasswordToken returns a valid, non-expired password token entity for a given user, token ID and token.
 // Since the actual token is not stored in the database for security purposes, if a matching password token entity is
 // found a hash of the provided token is compared with the hash stored in the database in order to validate.
-func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int, token string) (*ent.PasswordToken, error) {
+// func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int, token string) (*ent.PasswordToken, error) {
+// 	// Ensure expired tokens are never returned
+// 	expiration := time.Now().Add(-c.config.App.PasswordToken.Expiration)
+//
+// 	// Query to find a password token entity that matches the given user and token ID
+// 	pt, err := c.orm.PasswordToken.
+// 		Query().
+// 		Where(passwordtoken.ID(tokenID)).
+// 		Where(passwordtoken.HasUserWith(user.ID(userID))).
+// 		Where(passwordtoken.CreatedAtGTE(expiration)).
+// 		Only(ctx.Request().Context())
+//
+// 	switch err.(type) {
+// 	case *ent.NotFoundError:
+// 	case nil:
+// 		// Check the token for a hash match
+// 		if err := c.CheckPassword(token, pt.Hash); err == nil {
+// 			return pt, nil
+// 		}
+// 	default:
+// 		if !context.IsCanceledError(err) {
+// 			return nil, err
+// 		}
+// 	}
+//
+// 	return nil, InvalidPasswordTokenError{}
+// }
+
+func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int, token string) (*models.PasswordToken, error) {
 	// Ensure expired tokens are never returned
 	expiration := time.Now().Add(-c.config.App.PasswordToken.Expiration)
 
 	// Query to find a password token entity that matches the given user and token ID
-	pt, err := c.orm.PasswordToken.
-		Query().
-		Where(passwordtoken.ID(tokenID)).
-		Where(passwordtoken.HasUserWith(user.ID(userID))).
-		Where(passwordtoken.CreatedAtGTE(expiration)).
-		Only(ctx.Request().Context())
+
+	pt := new(models.PasswordToken)
+
+	err := c.bun.NewSelect().
+		Where("id = ?", tokenID).
+		Where("user_id = ?", userID).
+		Where("created_at >= ?", expiration).
+		Scan(ctx.Request().Context())
 
 	switch err.(type) {
 	case *ent.NotFoundError:
@@ -183,10 +254,20 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 
 // DeletePasswordTokens deletes all password tokens in the database for a belonging to a given user.
 // This should be called after a successful password reset.
+// func (c *AuthClient) DeletePasswordTokens(ctx echo.Context, userID int) error {
+//
+// 	_, err := c.orm.PasswordToken.
+// 		Delete().
+// 		Where(passwordtoken.HasUserWith(user.ID(userID))).
+// 		Exec(ctx.Request().Context())
+//
+// 	return err
+// }
+
 func (c *AuthClient) DeletePasswordTokens(ctx echo.Context, userID int) error {
-	_, err := c.orm.PasswordToken.
-		Delete().
-		Where(passwordtoken.HasUserWith(user.ID(userID))).
+
+	_, err := c.bun.NewDelete().
+		Where("user_id = ?", userID).
 		Exec(ctx.Request().Context())
 
 	return err

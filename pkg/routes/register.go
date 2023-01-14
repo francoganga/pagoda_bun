@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/controller"
 	"github.com/francoganga/finance/pkg/msg"
@@ -62,13 +63,19 @@ func (c *register) Post(ctx echo.Context) error {
 		return c.Fail(err, "unable to hash password")
 	}
 
-	// Attempt creating the user
-	u, err := c.Container.ORM.User.
-		Create().
-		SetName(form.Name).
-		SetEmail(form.Email).
-		SetPassword(pwHash).
-		Save(ctx.Request().Context())
+	u := &models.User{
+		Name:     form.Name,
+		Email:    form.Email,
+		Password: pwHash,
+	}
+
+	_, err = c.Container.Bun.NewInsert().
+		Model(u).
+		Exec(ctx.Request().Context())
+
+	if err != nil {
+		return c.Fail(err, "could not insert")
+	}
 
 	switch err.(type) {
 	case nil:
@@ -96,7 +103,7 @@ func (c *register) Post(ctx echo.Context) error {
 	return c.Redirect(ctx, "home")
 }
 
-func (c *register) sendVerificationEmail(ctx echo.Context, usr *ent.User) {
+func (c *register) sendVerificationEmail(ctx echo.Context, usr *models.User) {
 	// Generate a token
 	token, err := c.Container.Auth.GenerateEmailVerificationToken(usr.Email)
 	if err != nil {

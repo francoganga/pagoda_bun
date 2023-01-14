@@ -6,10 +6,9 @@ SET statement_timeout = 0;
 CREATE TABLE users (
     id serial primary key,
     name varchar not null,
-    name varchar unique not null,
+    email varchar unique not null,
     password varchar not null,
     verified boolean,
-    username varchar unique not null,
     created_at timestamp not null default now()
 );
 
