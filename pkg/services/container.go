@@ -189,7 +189,7 @@ func (c *Container) initORM() {
 
 // initAuth initializes the authentication client
 func (c *Container) initAuth() {
-	c.Auth = NewAuthClient(c.Config, c.ORM, c.Bun)
+	c.Auth = NewAuthClient(c.Config, c.Bun)
 }
 
 // initTemplateRenderer initializes the template renderer
