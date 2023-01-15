@@ -177,8 +177,10 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 		return nil, InvalidPasswordTokenError{}
 	}
 
-	if err := c.CheckPassword(token, pt.Hash); err == nil {
-		return pt, nil
+	if err == nil {
+		if err = c.CheckPassword(token, pt.Hash); err == nil {
+			return pt, nil
+		}
 	}
 
 	if !context.IsCanceledError(err) {
