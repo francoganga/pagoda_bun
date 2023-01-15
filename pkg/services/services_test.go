@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/francoganga/finance/config"
-	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/tests"
 
 	"github.com/labstack/echo/v4"
@@ -14,7 +14,7 @@ import (
 var (
 	c   *Container
 	ctx echo.Context
-	usr *ent.User
+	usr *models.User
 )
 
 func TestMain(m *testing.M) {
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 
 	// Create a test user
 	var err error
-	if usr, err = tests.CreateUser(c.ORM); err != nil {
+	if usr, err = tests.CreateUser(c.Bun); err != nil {
 		panic(err)
 	}
 

@@ -170,7 +170,7 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 		Model(pt).
 		Where("id = ?", tokenID).
 		Where("user_id = ?", userID).
-		Where("created_at <= ?", expiration).
+		Where("created_at >= ?", expiration).
 		Scan(ctx.Request().Context())
 
 	switch err.(type) {

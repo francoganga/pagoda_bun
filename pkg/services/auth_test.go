@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/francoganga/finance/ent/passwordtoken"
-	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/models"
 
 	"github.com/stretchr/testify/require"
 
@@ -94,11 +94,7 @@ func TestAuthClient_DeletePasswordTokens(t *testing.T) {
 	err := c.Auth.DeletePasswordTokens(ctx, usr.ID)
 	require.NoError(t, err)
 
-	// Check that no tokens remain
-	count, err := c.ORM.PasswordToken.
-		Query().
-		Where(passwordtoken.HasUserWith(user.ID(usr.ID))).
-		Count(context.Background())
+	count, err := c.Bun.NewSelect().Model((*models.PasswordToken)(nil)).Count(context.Background())
 
 	require.NoError(t, err)
 	assert.Equal(t, 0, count)

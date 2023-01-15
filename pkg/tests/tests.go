@@ -10,7 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
+	"github.com/uptrace/bun"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,12 +50,28 @@ func AssertHTTPErrorCode(t *testing.T, err error, code int) {
 }
 
 // CreateUser creates a random user entity
-func CreateUser(orm *ent.Client) (*ent.User, error) {
+// func CreateUser(orm *ent.Client) (*ent.User, error) {
+// 	seed := fmt.Sprintf("%d-%d", time.Now().UnixMilli(), rand.Intn(1000000))
+// 	return orm.User.
+// 		Create().
+// 		SetEmail(fmt.Sprintf("testuser-%s@localhost.localhost", seed)).
+// 		SetPassword("password").
+// 		SetName(fmt.Sprintf("Test User %s", seed)).
+// 		Save(context.Background())
+// }
+
+func CreateUser(bun *bun.DB) (*models.User, error) {
 	seed := fmt.Sprintf("%d-%d", time.Now().UnixMilli(), rand.Intn(1000000))
-	return orm.User.
-		Create().
-		SetEmail(fmt.Sprintf("testuser-%s@localhost.localhost", seed)).
-		SetPassword("password").
-		SetName(fmt.Sprintf("Test User %s", seed)).
-		Save(context.Background())
+
+	u := &models.User{
+		Email:    fmt.Sprintf("testuser-%s@localhost.localhost", seed),
+		Password: "password",
+		Name:     fmt.Sprintf("Test User %s", seed),
+	}
+
+	_, err := bun.NewInsert().
+		Model(u).
+		Exec(context.Background())
+
+	return u, err
 }

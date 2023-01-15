@@ -30,7 +30,7 @@ type PasswordToken struct {
 	ID   int `bun:"id,pk,autoincrement"`
 	Hash string
 
-	CreatedAt time.Time
+    CreatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 
 	UserID int
 }
