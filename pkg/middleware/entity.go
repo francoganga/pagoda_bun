@@ -6,14 +6,15 @@ import (
 	"strconv"
 
 	"github.com/francoganga/finance/ent"
-	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
+	"github.com/uptrace/bun"
 
 	"github.com/labstack/echo/v4"
 )
 
 // LoadUser loads the user based on the ID provided as a path parameter
-func LoadUser(orm *ent.Client) echo.MiddlewareFunc {
+func LoadUser(bun *bun.DB) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userID, err := strconv.Atoi(c.Param("user"))
@@ -21,10 +22,12 @@ func LoadUser(orm *ent.Client) echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusNotFound)
 			}
 
-			u, err := orm.User.
-				Query().
-				Where(user.ID(userID)).
-				Only(c.Request().Context())
+			u := new(models.User)
+
+			err = bun.NewSelect().
+				Model(u).
+				Where("id = ?", userID).
+				Scan(c.Request().Context())
 
 			switch err.(type) {
 			case nil:

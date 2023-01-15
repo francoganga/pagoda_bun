@@ -100,7 +100,7 @@ func userRoutes(c *services.Container, g *echo.Group, ctr controller.Controller)
 	noAuth.POST("/password", forgot.Post).Name = "forgot_password.post"
 
 	resetGroup := noAuth.Group("/password/reset",
-		middleware.LoadUser(c.ORM),
+		middleware.LoadUser(c.Bun),
 		middleware.LoadValidPasswordToken(c.Auth),
 	)
 	reset := resetPassword{Controller: ctr}

@@ -167,9 +167,10 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 	pt := new(models.PasswordToken)
 
 	err := c.bun.NewSelect().
+		Model(pt).
 		Where("id = ?", tokenID).
 		Where("user_id = ?", userID).
-		Where("created_at >= ?", expiration).
+		Where("created_at <= ?", expiration).
 		Scan(ctx.Request().Context())
 
 	switch err.(type) {
@@ -192,7 +193,10 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 // This should be called after a successful password reset.
 func (c *AuthClient) DeletePasswordTokens(ctx echo.Context, userID int) error {
 
+    pt := new(models.PasswordToken)
+
 	_, err := c.bun.NewDelete().
+    Model(pt).
 		Where("user_id = ?", userID).
 		Exec(ctx.Request().Context())
 

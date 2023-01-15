@@ -1,7 +1,9 @@
 package routes
 
 import (
-	"github.com/francoganga/finance/ent"
+	"fmt"
+
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/controller"
 	"github.com/francoganga/finance/pkg/msg"
@@ -22,20 +24,26 @@ type (
 )
 
 func (c *resetPassword) Get(ctx echo.Context) error {
+	fmt.Println("LLEGA0")
 	page := controller.NewPage(ctx)
 	page.Layout = "auth"
 	page.Name = "reset-password"
 	page.Title = "Reset password"
 	page.Form = resetPasswordForm{}
 
+	fmt.Println("LLEGA1")
+
 	if form := ctx.Get(context.FormKey); form != nil {
 		page.Form = form.(*resetPasswordForm)
 	}
+
+	fmt.Println("LLEGA2")
 
 	return c.RenderPage(ctx, page)
 }
 
 func (c *resetPassword) Post(ctx echo.Context) error {
+    fmt.Println("LLEGA-1")
 	var form resetPasswordForm
 	ctx.Set(context.FormKey, &form)
 
@@ -59,13 +67,19 @@ func (c *resetPassword) Post(ctx echo.Context) error {
 	}
 
 	// Get the requesting user
-	usr := ctx.Get(context.UserKey).(*ent.User)
+	usr := ctx.Get(context.UserKey).(*models.User)
 
-	// Update the user
-	_, err = usr.
-		Update().
-		SetPassword(hash).
-		Save(ctx.Request().Context())
+	// // Update the user
+	// _, err = usr.
+	// 	Update().
+	// 	SetPassword(hash).
+	// 	Save(ctx.Request().Context())
+
+	_, err = c.Container.Bun.NewUpdate().
+		Model(usr).
+		Set("password = ?", hash).
+        Where("id = ?", usr.ID).
+		Exec(ctx.Request().Context())
 
 	if err != nil {
 		return c.Fail(err, "unable to update password")
