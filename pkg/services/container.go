@@ -1,17 +1,21 @@
 package services
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 
 	// Required by ent
+	"github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 
+	"github.com/francoganga/finance/cmd/web/migrations"
 	"github.com/francoganga/finance/config"
 	"github.com/francoganga/finance/ent"
 
@@ -19,6 +23,7 @@ import (
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/migrate"
 
 	"github.com/uptrace/bun/extra/bundebug"
 )
@@ -162,7 +167,16 @@ func (c *Container) initDatabase() {
 
 		// Create the test database
 		if _, err = c.Database.Exec("CREATE DATABASE " + c.Config.Database.TestDatabase); err != nil {
-			panic(fmt.Sprintf("failed to create test database: %v", err))
+            var pgErr *pgconn.PgError
+            if errors.As(err, &pgErr) {
+                fmt.Println(pgErr.Message) // => syntax error at end of input
+                fmt.Println(pgErr.Code)    // => 42601
+
+                if pgErr.Code != "42P04" {
+                    panic(fmt.Sprintf("failed to create test database: %v", err))
+                }
+            }
+
 		}
 
 		// Connect to the test database
@@ -175,6 +189,26 @@ func (c *Container) initDatabase() {
 		}
 
 		c.Bun = bun.NewDB(c.Database, pgdialect.New())
+
+		migrator := migrate.NewMigrator(c.Bun, migrations.Migrations)
+
+		err := migrator.Init(context.Background())
+
+		if err != nil {
+			panic(fmt.Sprintf("failed to init migrator: %v", err))
+		}
+
+		group, err := migrator.Migrate(context.Background())
+		if err != nil {
+			panic(fmt.Sprintf("failed to migrate db: %v", err))
+		}
+
+		if group.ID == 0 {
+			fmt.Printf("there are no new migrations to run\n")
+		}
+
+		fmt.Printf("migrated to %s\n", group)
+
 	}
 }
 
