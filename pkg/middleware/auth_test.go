@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/francoganga/finance/ent"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/tests"
 
@@ -30,7 +30,7 @@ func TestLoadAuthenticatedUser(t *testing.T) {
 	// Verify the midldeware returns the authenticated user
 	_ = tests.ExecuteMiddleware(ctx, mw)
 	require.NotNil(t, ctx.Get(context.AuthenticatedUserKey))
-	ctxUsr, ok := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	ctxUsr, ok := ctx.Get(context.AuthenticatedUserKey).(*models.User)
 	require.True(t, ok)
 	assert.Equal(t, usr.ID, ctxUsr.ID)
 }
@@ -82,7 +82,7 @@ func TestLoadValidPasswordToken(t *testing.T) {
 	// Add user and password token context but no token and expect a redirect
 	ctx.SetParamNames("user", "password_token")
 	ctx.SetParamValues(fmt.Sprintf("%d", usr.ID), "1")
-	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.ORM))
+	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.Bun))
 	err = tests.ExecuteMiddleware(ctx, LoadValidPasswordToken(c.Auth))
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusFound, ctx.Response().Status)
@@ -90,7 +90,7 @@ func TestLoadValidPasswordToken(t *testing.T) {
 	// Add user context and invalid password token and expect a redirect
 	ctx.SetParamNames("user", "password_token", "token")
 	ctx.SetParamValues(fmt.Sprintf("%d", usr.ID), "1", "faketoken")
-	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.ORM))
+	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.Bun))
 	err = tests.ExecuteMiddleware(ctx, LoadValidPasswordToken(c.Auth))
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusFound, ctx.Response().Status)
@@ -102,10 +102,10 @@ func TestLoadValidPasswordToken(t *testing.T) {
 	// Add user and valid password token
 	ctx.SetParamNames("user", "password_token", "token")
 	ctx.SetParamValues(fmt.Sprintf("%d", usr.ID), fmt.Sprintf("%d", pt.ID), token)
-	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.ORM))
+	_ = tests.ExecuteMiddleware(ctx, LoadUser(c.Bun))
 	err = tests.ExecuteMiddleware(ctx, LoadValidPasswordToken(c.Auth))
 	assert.Nil(t, err)
-	ctxPt, ok := ctx.Get(context.PasswordTokenKey).(*ent.PasswordToken)
+	ctxPt, ok := ctx.Get(context.PasswordTokenKey).(*models.PasswordToken)
 	require.True(t, ok)
 	assert.Equal(t, pt.ID, ctxPt.ID)
 }

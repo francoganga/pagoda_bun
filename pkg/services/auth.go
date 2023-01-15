@@ -2,13 +2,13 @@ package services
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/francoganga/finance/config"
-	"github.com/francoganga/finance/ent"
 	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/golang-jwt/jwt"
@@ -173,17 +173,16 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 		Where("created_at >= ?", expiration).
 		Scan(ctx.Request().Context())
 
-	switch err.(type) {
-	case *ent.NotFoundError:
-	case nil:
-		// Check the token for a hash match
-		if err := c.CheckPassword(token, pt.Hash); err == nil {
-			return pt, nil
-		}
-	default:
-		if !context.IsCanceledError(err) {
-			return nil, err
-		}
+	if err == sql.ErrNoRows {
+		return nil, InvalidPasswordTokenError{}
+	}
+
+	if err := c.CheckPassword(token, pt.Hash); err == nil {
+		return pt, nil
+	}
+
+	if !context.IsCanceledError(err) {
+		return nil, err
 	}
 
 	return nil, InvalidPasswordTokenError{}
@@ -193,10 +192,10 @@ func (c *AuthClient) GetValidPasswordToken(ctx echo.Context, userID, tokenID int
 // This should be called after a successful password reset.
 func (c *AuthClient) DeletePasswordTokens(ctx echo.Context, userID int) error {
 
-    pt := new(models.PasswordToken)
+	pt := new(models.PasswordToken)
 
 	_, err := c.bun.NewDelete().
-    Model(pt).
+		Model(pt).
 		Where("user_id = ?", userID).
 		Exec(ctx.Request().Context())
 

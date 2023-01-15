@@ -167,15 +167,15 @@ func (c *Container) initDatabase() {
 
 		// Create the test database
 		if _, err = c.Database.Exec("CREATE DATABASE " + c.Config.Database.TestDatabase); err != nil {
-            var pgErr *pgconn.PgError
-            if errors.As(err, &pgErr) {
-                fmt.Println(pgErr.Message) // => syntax error at end of input
-                fmt.Println(pgErr.Code)    // => 42601
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				fmt.Println(pgErr.Message) // => syntax error at end of input
+				fmt.Println(pgErr.Code)    // => 42601
 
-                if pgErr.Code != "42P04" {
-                    panic(fmt.Sprintf("failed to create test database: %v", err))
-                }
-            }
+				if pgErr.Code != "42P04" {
+					panic(fmt.Sprintf("failed to create test database: %v", err))
+				}
+			}
 
 		}
 
@@ -189,6 +189,8 @@ func (c *Container) initDatabase() {
 		}
 
 		c.Bun = bun.NewDB(c.Database, pgdialect.New())
+
+		c.Bun.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true), bundebug.FromEnv("BUNDEBUG")))
 
 		migrator := migrate.NewMigrator(c.Bun, migrations.Migrations)
 
