@@ -1,13 +1,14 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 
-	"github.com/francoganga/finance/ent"
 	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/controller"
 	"github.com/francoganga/finance/pkg/msg"
+	"github.com/jackc/pgconn"
 
 	"github.com/labstack/echo/v4"
 )
@@ -74,18 +75,19 @@ func (c *register) Post(ctx echo.Context) error {
 		Exec(ctx.Request().Context())
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" {
+				msg.Warning(ctx, "A user with this email address already exists. Please log in.")
+				return c.Redirect(ctx, "login")
+			}
+		}
+
 		return c.Fail(err, "could not insert")
 	}
 
-	switch err.(type) {
-	case nil:
-		ctx.Logger().Infof("user created: %s", u.Name)
-	case *ent.ConstraintError:
-		msg.Warning(ctx, "A user with this email address already exists. Please log in.")
-		return c.Redirect(ctx, "login")
-	default:
-		return c.Fail(err, "unable to create user")
-	}
+	ctx.Logger().Infof("user created: %s", u.Name)
 
 	// Log the user in
 	err = c.Container.Auth.Login(ctx, u.ID)

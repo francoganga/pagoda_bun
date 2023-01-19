@@ -1,11 +1,11 @@
 package routes
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 
-	"github.com/francoganga/finance/ent"
-	"github.com/francoganga/finance/ent/user"
+	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/controller"
 	"github.com/francoganga/finance/pkg/msg"
@@ -62,16 +62,31 @@ func (c *forgotPassword) Post(ctx echo.Context) error {
 	}
 
 	// Attempt to load the user
-	u, err := c.Container.ORM.User.
-		Query().
-		Where(user.Email(strings.ToLower(form.Email))).
-		Only(ctx.Request().Context())
+	// u, err := c.Container.ORM.User.
+	// 	Query().
+	// 	Where(user.Email(strings.ToLower(form.Email))).
+	// 	Only(ctx.Request().Context())
+	//
+	// switch err.(type) {
+	// case *ent.NotFoundError:
+	// 	return succeed()
+	// case nil:
+	// default:
+	// 	return c.Fail(err, "error querying user during forgot password")
+	// }
 
-	switch err.(type) {
-	case *ent.NotFoundError:
+	u := new(models.User)
+
+	err := c.Container.Bun.NewSelect().
+		Model(u).
+		Where("email = ?", strings.ToLower(form.Email)).
+		Scan(ctx.Request().Context())
+
+	if err == sql.ErrNoRows {
 		return succeed()
-	case nil:
-	default:
+	}
+
+	if err != nil {
 		return c.Fail(err, "error querying user during forgot password")
 	}
 

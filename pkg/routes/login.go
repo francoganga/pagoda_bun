@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"database/sql"
 	"fmt"
 
-	"github.com/francoganga/finance/ent"
 	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/controller"
@@ -79,11 +79,19 @@ func (c *login) Post(ctx echo.Context) error {
 		return c.Fail(err, "failed login")
 	}
 
-	switch err.(type) {
-	case *ent.NotFoundError:
+	// switch err.(type) {
+	// case *ent.NotFoundError:
+	// 	return authFailed()
+	// case nil:
+	// default:
+	// 	return c.Fail(err, "error querying user during login")
+	// }
+
+	if err == sql.ErrNoRows {
 		return authFailed()
-	case nil:
-	default:
+	}
+
+	if err != nil {
 		return c.Fail(err, "error querying user during login")
 	}
 
