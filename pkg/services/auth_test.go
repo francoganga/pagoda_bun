@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/francoganga/finance/ent/passwordtoken"
 	"github.com/francoganga/finance/models"
 
 	"github.com/stretchr/testify/require"
@@ -70,11 +69,22 @@ func TestAuthClient_GetValidPasswordToken(t *testing.T) {
 	assert.Equal(t, pt.ID, pt2.ID)
 
 	// Expire the token by pushing the date far enough back
-	count, err := c.ORM.PasswordToken.
-		Update().
-		SetCreatedAt(time.Now().Add(-(c.Config.App.PasswordToken.Expiration + time.Hour))).
-		Where(passwordtoken.ID(pt.ID)).
-		Save(context.Background())
+	// count, err := c.ORM.PasswordToken.
+	// 	Update().
+	// 	SetCreatedAt(time.Now().Add(-(c.Config.App.PasswordToken.Expiration + time.Hour))).
+	// 	Where(passwordtoken.ID(pt.ID)).
+	// 	Save(context.Background())
+
+	ptU := &models.PasswordToken{
+		ID:        pt.ID,
+		CreatedAt: time.Now().Add(-(c.Config.App.PasswordToken.Expiration + time.Hour)),
+	}
+
+	count, err := c.Bun.NewUpdate().
+		Model(ptU).
+		WherePK().
+		Exec(context.Background())
+
 	require.NoError(t, err)
 	require.Equal(t, 1, count)
 

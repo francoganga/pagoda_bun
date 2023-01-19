@@ -1,11 +1,11 @@
 package middleware
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/francoganga/finance/ent"
 	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/uptrace/bun"
@@ -29,18 +29,19 @@ func LoadUser(bun *bun.DB) echo.MiddlewareFunc {
 				Where("id = ?", userID).
 				Scan(c.Request().Context())
 
-			switch err.(type) {
-			case nil:
+			if err == sql.ErrNoRows {
+				return echo.NewHTTPError(http.StatusNotFound)
+			}
+
+			if err == nil {
 				c.Set(context.UserKey, u)
 				return next(c)
-			case *ent.NotFoundError:
-				return echo.NewHTTPError(http.StatusNotFound)
-			default:
-				return echo.NewHTTPError(
-					http.StatusInternalServerError,
-					fmt.Sprintf("error querying user: %v", err),
-				)
 			}
+
+			return echo.NewHTTPError(
+				http.StatusInternalServerError,
+				fmt.Sprintf("error querying user: %v", err),
+			)
 		}
 	}
 }

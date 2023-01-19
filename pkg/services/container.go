@@ -6,9 +6,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
-	entsql "entgo.io/ent/dialect/sql"
-
 	// Required by ent
 	"github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -17,7 +14,6 @@ import (
 
 	"github.com/francoganga/finance/cmd/web/migrations"
 	"github.com/francoganga/finance/config"
-	"github.com/francoganga/finance/ent"
 
 	// Require by ent
 
@@ -49,9 +45,6 @@ type Container struct {
 	// Bun DB connection
 	Bun *bun.DB
 
-	// ORM stores a client to the ORM
-	ORM *ent.Client
-
 	// Mail stores an email sending client
 	Mail *MailClient
 
@@ -73,7 +66,6 @@ func NewContainer() *Container {
 	c.initWeb()
 	c.initCache()
 	c.initDatabase()
-	c.initORM()
 	c.initAuth()
 	c.initTemplateRenderer()
 	c.initMail()
@@ -87,9 +79,6 @@ func (c *Container) Shutdown() error {
 		return err
 	}
 	if err := c.Cache.Close(); err != nil {
-		return err
-	}
-	if err := c.ORM.Close(); err != nil {
 		return err
 	}
 	if err := c.Database.Close(); err != nil {
@@ -212,15 +201,6 @@ func (c *Container) initDatabase() {
 		fmt.Printf("migrated to %s\n", group)
 
 	}
-}
-
-// initORM initializes the ORM
-func (c *Container) initORM() {
-	drv := entsql.OpenDB(dialect.Postgres, c.Database)
-	c.ORM = ent.NewClient(ent.Driver(drv))
-	// if err := c.ORM.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {
-	// 	panic(fmt.Sprintf("failed to create database schema: %v", err))
-	// }
 }
 
 // initAuth initializes the authentication client

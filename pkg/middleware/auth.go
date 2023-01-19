@@ -1,11 +1,11 @@
 package middleware
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/francoganga/finance/ent"
 	"github.com/francoganga/finance/models"
 	"github.com/francoganga/finance/pkg/context"
 	"github.com/francoganga/finance/pkg/msg"
@@ -19,21 +19,39 @@ func LoadAuthenticatedUser(authClient *services.AuthClient) echo.MiddlewareFunc 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			u, err := authClient.GetAuthenticatedUser(c)
-			switch err.(type) {
-			case *ent.NotFoundError:
+			// switch err.(type) {
+			// case *ent.NotFoundError:
+			// 	c.Logger().Warn("auth user not found")
+			// case services.NotAuthenticatedError:
+			// case nil:
+			// 	c.Set(context.AuthenticatedUserKey, u)
+			// 	c.Logger().Infof("auth user loaded in to context: %d", u.ID)
+			// default:
+			// 	return echo.NewHTTPError(
+			// 		http.StatusInternalServerError,
+			// 		fmt.Sprintf("error querying for authenticated user: %v", err),
+			// 	)
+			// }
+
+			if err == sql.ErrNoRows {
 				c.Logger().Warn("auth user not found")
-			case services.NotAuthenticatedError:
-			case nil:
-				c.Set(context.AuthenticatedUserKey, u)
-				c.Logger().Infof("auth user loaded in to context: %d", u.ID)
-			default:
-				return echo.NewHTTPError(
-					http.StatusInternalServerError,
-					fmt.Sprintf("error querying for authenticated user: %v", err),
-				)
+				return next(c)
 			}
 
-			return next(c)
+			if _, ok := err.(*services.NotAuthenticatedError); ok {
+				return next(c)
+			}
+
+			if err == nil {
+				c.Set(context.AuthenticatedUserKey, u)
+				c.Logger().Infof("auth user loaded in to context: %d", u.ID)
+				return next(c)
+			}
+
+			return echo.NewHTTPError(
+				http.StatusInternalServerError,
+				fmt.Sprintf("error querying for authenticated user: %v", err),
+			)
 		}
 	}
 }

@@ -98,10 +98,14 @@ func (c *AuthClient) GetAuthenticatedUserID(ctx echo.Context) (int, error) {
 func (c *AuthClient) GetAuthenticatedUser(ctx echo.Context) (*models.User, error) {
 	if userID, err := c.GetAuthenticatedUserID(ctx); err == nil {
 		u := new(models.User)
-		c.bun.NewSelect().
+		err := c.bun.NewSelect().
 			Model(u).
 			Where("id = ?", userID).
 			Scan(ctx.Request().Context())
+
+		if err != nil {
+			return nil, err
+		}
 
 		return u, nil
 	}
