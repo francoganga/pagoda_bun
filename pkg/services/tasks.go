@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hibiken/asynq"
-	"github.com/francoganga/finance/config"
+	"github.com/francoganga/pagoda_bun/config"
 )
 
 type (

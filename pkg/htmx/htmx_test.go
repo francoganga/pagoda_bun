@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/francoganga/finance/pkg/tests"
+	"github.com/francoganga/pagoda_bun/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 

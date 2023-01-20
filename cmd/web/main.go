@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/francoganga/finance/cmd/web/migrations"
-	"github.com/francoganga/finance/pkg/routes"
-	"github.com/francoganga/finance/pkg/services"
+	"github.com/francoganga/pagoda_bun/cmd/web/migrations"
+	"github.com/francoganga/pagoda_bun/pkg/routes"
+	"github.com/francoganga/pagoda_bun/pkg/services"
 	"github.com/uptrace/bun/migrate"
 	"github.com/urfave/cli/v2"
 )

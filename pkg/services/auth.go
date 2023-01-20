@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/francoganga/finance/config"
-	"github.com/francoganga/finance/models"
-	"github.com/francoganga/finance/pkg/context"
+	"github.com/francoganga/pagoda_bun/config"
+	"github.com/francoganga/pagoda_bun/models"
+	"github.com/francoganga/pagoda_bun/pkg/context"
 	"github.com/golang-jwt/jwt"
 	"github.com/uptrace/bun"
 

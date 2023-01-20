@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/francoganga/finance/models"
+	"github.com/francoganga/pagoda_bun/models"
 	"github.com/uptrace/bun"
 
 	"github.com/stretchr/testify/assert"

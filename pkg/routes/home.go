@@ -3,7 +3,7 @@ package routes
 import (
 	"fmt"
 
-	"github.com/francoganga/finance/pkg/controller"
+	"github.com/francoganga/pagoda_bun/pkg/controller"
 
 	"github.com/labstack/echo/v4"
 )

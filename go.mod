@@ -1,4 +1,4 @@
-module github.com/francoganga/finance
+module github.com/francoganga/pagoda_bun
 
 go 1.19
 

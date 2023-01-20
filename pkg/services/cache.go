@@ -10,7 +10,7 @@ import (
 	"github.com/eko/gocache/v2/marshaler"
 	"github.com/eko/gocache/v2/store"
 	"github.com/go-redis/redis/v8"
-	"github.com/francoganga/finance/config"
+	"github.com/francoganga/pagoda_bun/config"
 )
 
 type (

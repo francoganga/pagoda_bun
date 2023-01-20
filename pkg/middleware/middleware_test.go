@@ -4,10 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/francoganga/finance/config"
-	"github.com/francoganga/finance/models"
-	"github.com/francoganga/finance/pkg/services"
-	"github.com/francoganga/finance/pkg/tests"
+	"github.com/francoganga/pagoda_bun/config"
+	"github.com/francoganga/pagoda_bun/models"
+	"github.com/francoganga/pagoda_bun/pkg/services"
+	"github.com/francoganga/pagoda_bun/pkg/tests"
 )
 
 var (

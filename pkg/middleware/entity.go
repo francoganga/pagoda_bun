@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/francoganga/finance/models"
-	"github.com/francoganga/finance/pkg/context"
+	"github.com/francoganga/pagoda_bun/models"
+	"github.com/francoganga/pagoda_bun/pkg/context"
 	"github.com/uptrace/bun"
 
 	"github.com/labstack/echo/v4"

@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/francoganga/finance/models"
-	"github.com/francoganga/finance/pkg/context"
-	"github.com/francoganga/finance/pkg/controller"
-	"github.com/francoganga/finance/pkg/msg"
+	"github.com/francoganga/pagoda_bun/models"
+	"github.com/francoganga/pagoda_bun/pkg/context"
+	"github.com/francoganga/pagoda_bun/pkg/controller"
+	"github.com/francoganga/pagoda_bun/pkg/msg"
 
 	"github.com/labstack/echo/v4"
 )

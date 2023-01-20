@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/francoganga/finance/models"
-	"github.com/francoganga/finance/pkg/context"
-	"github.com/francoganga/finance/pkg/tests"
+	"github.com/francoganga/pagoda_bun/models"
+	"github.com/francoganga/pagoda_bun/pkg/context"
+	"github.com/francoganga/pagoda_bun/pkg/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

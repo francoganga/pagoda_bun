@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/francoganga/finance/models"
+	"github.com/francoganga/pagoda_bun/models"
 
 	"github.com/stretchr/testify/require"
 
