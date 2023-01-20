@@ -52,6 +52,7 @@ func (c *verifyEmail) Get(ctx echo.Context) error {
 
 			_, err := c.Container.Bun.NewUpdate().
 				Model(updateUser).
+                Column("verified").
 				WherePK().
 				Exec(ctx.Request().Context())
 

@@ -38,7 +38,7 @@ func LoadAuthenticatedUser(authClient *services.AuthClient) echo.MiddlewareFunc 
 				return next(c)
 			}
 
-			if _, ok := err.(*services.NotAuthenticatedError); ok {
+			if _, ok := err.(services.NotAuthenticatedError); ok {
 				return next(c)
 			}
 

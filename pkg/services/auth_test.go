@@ -80,13 +80,18 @@ func TestAuthClient_GetValidPasswordToken(t *testing.T) {
 		CreatedAt: time.Now().Add(-(c.Config.App.PasswordToken.Expiration + time.Hour)),
 	}
 
-	count, err := c.Bun.NewUpdate().
+	res, err := c.Bun.NewUpdate().
 		Model(ptU).
 		WherePK().
+		OmitZero().
 		Exec(context.Background())
 
 	require.NoError(t, err)
-	require.Equal(t, 1, count)
+
+	count, err := res.RowsAffected()
+
+	require.NoError(t, err)
+	require.Equal(t, 1, int(count))
 
 	// Expired tokens should not be valid
 	_, err = c.Auth.GetValidPasswordToken(ctx, usr.ID, pt.ID, token)
